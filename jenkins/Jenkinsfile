@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/YOUR_USERNAME/devops-free-tier-cicd.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'No build required for static app'
+            }
+        }
+
+        stage('Deploy Placeholder') {
+            steps {
+                echo 'Deployment will be added in next days'
+            }
+        }
+    }
+}
