@@ -2,22 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/devops-free-tier-cicd.git'
+                url: 'https://github.com/megha527/devops-free-tier-cicd.git'
             }
         }
 
-        stage('Build') {
+        stage('Validate') {
             steps {
-                echo 'No build required for static app'
-            }
-        }
-
-        stage('Deploy Placeholder') {
-            steps {
-                echo 'Deployment will be added in next days'
+                echo 'Code fetched successfully'
+                sh 'ls -l'
             }
         }
     }
