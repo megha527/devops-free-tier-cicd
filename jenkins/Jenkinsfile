@@ -9,10 +9,19 @@ pipeline {
             }
         }
 
-        stage('Validate') {
+        stage('Terraform Init') {
             steps {
-                echo 'Code fetched successfully'
-                sh 'ls -l'
+                dir('terraform') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform validate'
+                }
             }
         }
     }
