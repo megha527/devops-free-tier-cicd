@@ -1,28 +1,18 @@
 pipeline {
     agent any
 
-    options {
-        disableResume()
-        timestamps()
-        timeout(time: 10, unit: 'MINUTES')
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                deleteDir()   // prevents corrupted workspace
                 git branch: 'main',
-                    url: 'https://github.com/megha527/devops-free-tier-cicd.git'
+                url: 'https://github.com/megha527/devops-free-tier-cicd.git'
             }
         }
 
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
-                    sh '''
-                      terraform --version
-                      terraform init -input=false -no-color
-                    '''
+                    sh 'terraform init'
                 }
             }
         }
@@ -30,21 +20,17 @@ pipeline {
         stage('Terraform Validate') {
             steps {
                 dir('terraform') {
-                    sh 'terraform validate -no-color'
+                    sh 'terraform validate'
                 }
             }
         }
-    }
 
-    post {
-        always {
-            echo "Pipeline finished"
-        }
-        success {
-            echo "Terraform validation successful"
-        }
-        failure {
-            echo "Pipeline failed – check logs"
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
         }
     }
 }
