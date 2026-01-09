@@ -1,29 +1,41 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        AWS_DEFAULT_REGION = "ap-south-1"
     }
 
-    stage('Terraform Init') {
-      steps {
-        sh 'terraform init'
-      }
-    }
+    stages {
 
-    stage('Terraform Plan') {
-      steps {
-        sh 'terraform plan'
-      }
-    }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-    stage('Terraform Apply') {
-      steps {
-        sh 'terraform apply -auto-approve'
-      }
+        stage('Terraform Init') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-credentials']
+                ]) {
+                    sh '''
+                        aws sts get-caller-identity
+                        terraform init
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-credentials']
+                ]) {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
     }
-  }
 }
