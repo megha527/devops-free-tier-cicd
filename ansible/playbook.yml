@@ -1,0 +1,7 @@
+- name: Configure server
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name: Placeholder task
+      debug:
+        msg: "Ansible setup will be added later"
