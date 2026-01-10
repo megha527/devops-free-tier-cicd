@@ -2,28 +2,49 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+        AWS_DEFAULT_REGION = "ap-south-1"
     }
 
     stages {
+
         stage('Clean Workspace') {
             steps {
+                // Completely remove all files from previous builds
                 deleteDir()
             }
         }
 
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Terraform Init & Apply') {
+        stage('Terraform Init') {
             steps {
-                dir('terraform') {
-                    sh 'terraform init'
-                    sh 'terraform apply -auto-approve'
+                dir('terraform') {   // Run inside terraform folder
+                    withCredentials([
+                        string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                        sh '''
+                            aws sts get-caller-identity
+                            terraform init
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {   // Run inside terraform folder
+                    withCredentials([
+                        string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                        sh 'terraform apply -auto-approve'
+                    }
                 }
             }
         }
