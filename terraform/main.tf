@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = "my-terraform-state-free-tier-12345"
+    key    = "cicd/terraform.tfstate"
+    region = "ap-south-1"
+  }
+}
+
 provider "aws" {
   region = "ap-south-1"
 }
@@ -30,9 +38,9 @@ resource "aws_security_group" "web_sg" {
 
 # EC2 Instance
 resource "aws_instance" "app_server" {
-  ami             = "ami-02b8269d5e85954ef" # Ubuntu 24.04 LTS
+  ami             = "ami-02b8269d5e85954ef"
   instance_type   = "t2.micro"
-  key_name        = "jenkins-key" # Must match your AWS key
+  key_name        = "jenkins-key"
   security_groups = [aws_security_group.web_sg.name]
 
   tags = {

@@ -23,14 +23,9 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
-                    withCredentials([
-                        string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
-                        string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
-                    ]) {
-                        sh '''
-                            terraform init
-                        '''
-                    }
+                    sh '''
+                        terraform init -input=false
+                    '''
                 }
             }
         }
@@ -38,14 +33,9 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 dir('terraform') {
-                    withCredentials([
-                        string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
-                        string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
-                    ]) {
-                        sh '''
-                            terraform apply -auto-approve
-                        '''
-                    }
+                    sh '''
+                        terraform apply -auto-approve -input=false
+                    '''
                 }
             }
         }
